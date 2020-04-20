@@ -32,6 +32,7 @@ namespace Nop.Web.Areas.Admin.Factories
         private readonly IAclSupportedModelFactory _aclSupportedModelFactory;
         private readonly IAuthenticationPluginManager _authenticationPluginManager;
         private readonly IBaseAdminModelFactory _baseAdminModelFactory;
+        private readonly ICacheKeyService _cacheKeyService;
         private readonly ILocalizationService _localizationService;
         private readonly ILocalizedModelFactory _localizedModelFactory;
         private readonly IPaymentPluginManager _paymentPluginManager;
@@ -52,6 +53,7 @@ namespace Nop.Web.Areas.Admin.Factories
         public PluginModelFactory(IAclSupportedModelFactory aclSupportedModelFactory,
             IAuthenticationPluginManager authenticationPluginManager,
             IBaseAdminModelFactory baseAdminModelFactory,
+            ICacheKeyService cacheKeyService,
             ILocalizationService localizationService,
             ILocalizedModelFactory localizedModelFactory,
             IPaymentPluginManager paymentPluginManager,
@@ -68,6 +70,7 @@ namespace Nop.Web.Areas.Admin.Factories
             _aclSupportedModelFactory = aclSupportedModelFactory;
             _authenticationPluginManager = authenticationPluginManager;
             _baseAdminModelFactory = baseAdminModelFactory;
+            _cacheKeyService = cacheKeyService;
             _localizationService = localizationService;
             _localizedModelFactory = localizedModelFactory;
             _paymentPluginManager = paymentPluginManager;
@@ -377,7 +380,7 @@ namespace Nop.Web.Areas.Admin.Factories
         /// <returns>List of models</returns>
         public virtual IList<AdminNavigationPluginModel> PrepareAdminNavigationPluginModels()
         {
-            var cacheKey = NopPluginDefaults.AdminNavigationPluginsCacheKey.FillCacheKey(_workContext.CurrentCustomer);
+            var cacheKey = _cacheKeyService.PrepareKeyForDefaultCache(NopPluginDefaults.AdminNavigationPluginsCacheKey, _workContext.CurrentCustomer);
             return _cacheManager.Get(cacheKey, () =>
             {
                 //get installed plugins

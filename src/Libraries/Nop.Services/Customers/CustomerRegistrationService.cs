@@ -254,7 +254,7 @@ namespace Nop.Services.Customers
             request.Customer.Active = request.IsApproved;
 
             //add to 'Registered' role
-            var registeredRole = _customerService.GetCustomerRoleBySystemName(NopCustomerDefaults.RegisteredRoleName);
+            var registeredRole = _customerService.GetCustomerRoleBySystemName(Core.Domain.Customers.NopCustomerDefaults.RegisteredRoleName);
             if (registeredRole == null)
                 throw new NopException("'Registered' role could not be loaded");
 
@@ -263,7 +263,7 @@ namespace Nop.Services.Customers
             //remove from 'Guests' role            
             if (_customerService.IsGuest(request.Customer))
             {
-                var guestRole = _customerService.GetCustomerRoleBySystemName(NopCustomerDefaults.GuestsRoleName);
+                var guestRole = _customerService.GetCustomerRoleBySystemName(Core.Domain.Customers.NopCustomerDefaults.GuestsRoleName);
                 _customerService.RemoveCustomerRoleMapping(request.Customer, guestRole);
             }
 
@@ -397,7 +397,7 @@ namespace Nop.Services.Customers
                 _customerService.UpdateCustomer(customer);
 
                 //email re-validation message
-                _genericAttributeService.SaveAttribute(customer, NopCustomerDefaults.EmailRevalidationTokenAttribute, Guid.NewGuid().ToString());
+                _genericAttributeService.SaveAttribute(customer, Core.Domain.Customers.NopCustomerDefaults.EmailRevalidationTokenAttribute, Guid.NewGuid().ToString());
                 _workflowMessageService.SendCustomerEmailRevalidationMessage(customer, _workContext.WorkingLanguage.Id);
             }
             else

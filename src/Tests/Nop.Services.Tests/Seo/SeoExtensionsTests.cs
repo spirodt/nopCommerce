@@ -8,6 +8,7 @@ using Nop.Data;
 using Nop.Services.Events;
 using Nop.Services.Localization;
 using Nop.Services.Seo;
+using Nop.Services.Tests.FakeServices;
 using NUnit.Framework;
 
 namespace Nop.Services.Tests.Seo
@@ -35,7 +36,7 @@ namespace Nop.Services.Tests.Seo
             _localizationSettings = new LocalizationSettings();
             _seoSettings = new SeoSettings();
 
-            _urlRecordService = new UrlRecordService(_eventPublisher.Object, _languageService.Object, _urlRecordRepository.Object,
+            _urlRecordService = new UrlRecordService(new FakeCacheKeyService(), _eventPublisher.Object, _languageService.Object, _urlRecordRepository.Object,
                 _cacheManager.Object, _workContext.Object, _localizationSettings, _seoSettings);
         }
 

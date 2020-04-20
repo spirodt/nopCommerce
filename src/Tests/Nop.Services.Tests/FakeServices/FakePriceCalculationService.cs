@@ -3,6 +3,7 @@ using Nop.Core;
 using Nop.Core.Caching;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Directory;
+using Nop.Services.Caching;
 using Nop.Services.Catalog;
 using Nop.Services.Customers;
 using Nop.Services.Directory;
@@ -15,6 +16,7 @@ namespace Nop.Services.Tests.FakeServices
     {
         public FakePriceCalculationService(CatalogSettings catalogSettings = null,
             CurrencySettings currencySettings = null,
+            ICacheKeyService cacheKeyService = null,
             ICategoryService categoryService = null,
             ICurrencyService currencyService = null,
             ICustomerService customerService = null,
@@ -27,6 +29,7 @@ namespace Nop.Services.Tests.FakeServices
             IWorkContext workContext = null) : base(
                 catalogSettings ?? new CatalogSettings(),
                 currencySettings ?? new CurrencySettings(),
+                cacheKeyService ?? new FakeCacheKeyService(),
                 categoryService ?? new Mock<ICategoryService>().Object,
                 currencyService ?? new Mock<ICurrencyService>().Object,
                 customerService ?? new Mock<ICustomerService>().Object,

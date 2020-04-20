@@ -23,13 +23,14 @@ namespace Nop.Plugin.Pickup.PickupInStore.Services
         /// </remarks>
         private readonly CacheKey _pickupPointAllKey = new CacheKey("Nop.pickuppoint.all-{0}");
         private const string PICKUP_POINT_PATTERN_KEY = "Nop.pickuppoint.";
-       
+
         #endregion
 
         #region Fields
 
-        private readonly ICacheManager _cacheManager;
+        private readonly ICacheKeyService _cacheKeyService;
         private readonly IRepository<StorePickupPoint> _storePickupPointRepository;
+        private readonly IStaticCacheManager _cacheManager;
 
         #endregion
 
@@ -38,13 +39,20 @@ namespace Nop.Plugin.Pickup.PickupInStore.Services
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
+        /// <param name="cachingSettings">Caching settings</param>
+        /// <param name="cacheKeyService">Cache service</param>
         /// <param name="storePickupPointRepository">Store pickup point repository</param>
-        public StorePickupPointService(ICacheManager cacheManager,
-            IRepository<StorePickupPoint> storePickupPointRepository)
+        /// <param name="cacheManager">Cache manager</param>
+        public StorePickupPointService(CachingSettings cachingSettings,
+            ICacheKeyService cacheKeyService,
+            IRepository<StorePickupPoint> storePickupPointRepository,
+            IStaticCacheManager cacheManager)
         {
-            _cacheManager = cacheManager;
+            _cacheKeyService = cacheKeyService;
             _storePickupPointRepository = storePickupPointRepository;
+            _cacheManager = cacheManager;
+
+            _pickupPointAllKey.CacheTime = cachingSettings.ShortTermCacheTime;
         }
 
         #endregion
@@ -60,7 +68,7 @@ namespace Nop.Plugin.Pickup.PickupInStore.Services
         /// <returns>Pickup points</returns>
         public virtual IPagedList<StorePickupPoint> GetAllStorePickupPoints(int storeId = 0, int pageIndex = 0, int pageSize = int.MaxValue)
         {
-            var key = _pickupPointAllKey.FillCacheKey(storeId);
+            var key = _cacheKeyService.PrepareKeyForDefaultCache(_pickupPointAllKey, storeId);
             var rez = _cacheManager.Get(key, () =>
             {
                 var query = _storePickupPointRepository.Table;

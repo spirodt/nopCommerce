@@ -9,6 +9,7 @@ using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Discounts;
 using Nop.Core.Domain.Orders;
 using Nop.Core.Domain.Stores;
+using Nop.Services.Caching;
 using Nop.Services.Catalog;
 using Nop.Services.Customers;
 using Nop.Services.Discounts;
@@ -23,7 +24,7 @@ namespace Nop.Services.Tests
     {
         private readonly List<Discount> _discounts;
 
-        public TestDiscountService(
+        public TestDiscountService(ICacheKeyService cacheKeyService,
             ICustomerService customerService,
             IDiscountPluginManager discountPluginManager,
             IEventPublisher eventPublisher,
@@ -35,6 +36,7 @@ namespace Nop.Services.Tests
             IRepository<Order> orderRepository,
             IStaticCacheManager cacheManager,
             IStoreContext storeContext) : base(
+            cacheKeyService,
             customerService,
             discountPluginManager,
             eventPublisher,
@@ -119,6 +121,7 @@ namespace Nop.Services.Tests
             var orderRepo = new Mock<IRepository<Order>>();
 
             var discountService = new TestDiscountService(
+                new FakeCacheKeyService(),
                 customerService.Object,
                 discountPluginManager,
                 eventPublisher.Object,

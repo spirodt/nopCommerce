@@ -37,6 +37,7 @@ namespace Nop.Plugin.Tax.Avalara
         private readonly AvalaraTaxManager _avalaraTaxManager;
         private readonly AvalaraTaxSettings _avalaraTaxSettings;
         private readonly IAddressService _addressService;
+        private readonly ICacheKeyService _cacheKeyService;
         private readonly ICheckoutAttributeParser _checkoutAttributeParser;
         private readonly ICheckoutAttributeService _checkoutAttributeService;
         private readonly ICountryService _countryService;
@@ -62,6 +63,7 @@ namespace Nop.Plugin.Tax.Avalara
         public AvalaraTaxProvider(AvalaraTaxManager avalaraTaxManager,
             AvalaraTaxSettings avalaraTaxSettings,
             IAddressService addressService,
+            ICacheKeyService cacheKeyService,
             ICheckoutAttributeParser checkoutAttributeParser,
             ICheckoutAttributeService checkoutAttributeService,
             ICountryService countryService,
@@ -83,6 +85,7 @@ namespace Nop.Plugin.Tax.Avalara
             _avalaraTaxManager = avalaraTaxManager;
             _avalaraTaxSettings = avalaraTaxSettings;
             _addressService = addressService;
+            _cacheKeyService = cacheKeyService;
             _checkoutAttributeParser = checkoutAttributeParser;
             _checkoutAttributeService = checkoutAttributeService;
             _countryService = countryService;
@@ -519,7 +522,7 @@ namespace Nop.Plugin.Tax.Avalara
                 return new CalculateTaxResult { Errors = new[] { "Address is not set" } };
 
             //construct a cache key
-            var cacheKey = AvalaraTaxDefaults.TaxRateCacheKey.FillCacheKey(
+            var cacheKey = _cacheKeyService.PrepareKeyForDefaultCache(AvalaraTaxDefaults.TaxRateCacheKey,
                 calculateTaxRequest.Address.Address1,
                 calculateTaxRequest.Address.City,
                 calculateTaxRequest.Address.StateProvinceId ?? 0,

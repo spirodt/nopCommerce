@@ -19,7 +19,7 @@ namespace Nop.Plugin.Tax.FixedOrByCountryStateZip.Services
 
         private readonly IEventPublisher _eventPublisher;
         private readonly IRepository<TaxRate> _taxRateRepository;
-        private readonly ICacheManager _cacheManager;
+        private readonly IStaticCacheManager _cacheManager;
 
         #endregion
 
@@ -31,13 +31,13 @@ namespace Nop.Plugin.Tax.FixedOrByCountryStateZip.Services
         /// <param name="eventPublisher">Event publisher</param>
         /// <param name="cacheManager">Cache manager</param>
         /// <param name="taxRateRepository">Tax rate repository</param>
-        public CountryStateZipService(IEventPublisher eventPublisher,
-            ICacheManager cacheManager,
-            IRepository<TaxRate> taxRateRepository)
+        public CountryStateZipService(IEventPublisher eventPublisher,            
+            IRepository<TaxRate> taxRateRepository,
+            IStaticCacheManager cacheManager)
         {
-            _eventPublisher = eventPublisher;
-            _cacheManager = cacheManager;
+            _eventPublisher = eventPublisher;            
             _taxRateRepository = taxRateRepository;
+            _cacheManager = cacheManager;
         }
 
         #endregion
@@ -65,7 +65,7 @@ namespace Nop.Plugin.Tax.FixedOrByCountryStateZip.Services
         /// <returns>Tax rates</returns>
         public virtual IPagedList<TaxRate> GetAllTaxRates(int pageIndex = 0, int pageSize = int.MaxValue)
         {
-            var key = ModelCacheEventConsumer.TAXRATE_ALL_KEY.FillCacheKey();
+            var key = ModelCacheEventConsumer.TAXRATE_ALL_KEY;
             var rez = _cacheManager.Get(key, () =>
             {
                 var query = from tr in _taxRateRepository.Table
@@ -90,7 +90,7 @@ namespace Nop.Plugin.Tax.FixedOrByCountryStateZip.Services
             if (taxRateId == 0)
                 return null;
 
-           return _taxRateRepository.GetById(taxRateId);
+            return _taxRateRepository.GetById(taxRateId);
         }
 
         /// <summary>

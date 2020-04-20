@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Nop.Core;
+using Nop.Core.Caching;
 using Nop.Core.Domain;
 using Nop.Core.Domain.Affiliates;
 using Nop.Core.Domain.Blogs;
@@ -4192,7 +4193,7 @@ namespace Nop.Services.Installation
         protected virtual void InstallSampleCustomers()
         {
             var crRegistered = _customerRoleRepository.Table.FirstOrDefault(customerRole =>
-                customerRole.SystemName == NopCustomerDefaults.RegisteredRoleName);
+                customerRole.SystemName == Core.Domain.Customers.NopCustomerDefaults.RegisteredRoleName);
 
             if (crRegistered == null)
                 throw new ArgumentNullException(nameof(crRegistered));
@@ -4244,8 +4245,8 @@ namespace Nop.Services.Installation
             InsertInstallationData(new CustomerCustomerRoleMapping { CustomerId = secondUser.Id, CustomerRoleId = crRegistered.Id });
 
             //set default customer name
-            _genericAttributeService.SaveAttribute(secondUser, NopCustomerDefaults.FirstNameAttribute, defaultSecondUserAddress.FirstName);
-            _genericAttributeService.SaveAttribute(secondUser, NopCustomerDefaults.LastNameAttribute, defaultSecondUserAddress.LastName);
+            _genericAttributeService.SaveAttribute(secondUser, Core.Domain.Customers.NopCustomerDefaults.FirstNameAttribute, defaultSecondUserAddress.FirstName);
+            _genericAttributeService.SaveAttribute(secondUser, Core.Domain.Customers.NopCustomerDefaults.LastNameAttribute, defaultSecondUserAddress.LastName);
 
             //set customer password
             _customerPasswordRepository.Insert(new CustomerPassword
@@ -4296,8 +4297,8 @@ namespace Nop.Services.Installation
             InsertInstallationData(new CustomerCustomerRoleMapping { CustomerId = thirdUser.Id, CustomerRoleId = crRegistered.Id });
 
             //set default customer name
-            _genericAttributeService.SaveAttribute(thirdUser, NopCustomerDefaults.FirstNameAttribute, defaultThirdUserAddress.FirstName);
-            _genericAttributeService.SaveAttribute(thirdUser, NopCustomerDefaults.LastNameAttribute, defaultThirdUserAddress.LastName);
+            _genericAttributeService.SaveAttribute(thirdUser, Core.Domain.Customers.NopCustomerDefaults.FirstNameAttribute, defaultThirdUserAddress.FirstName);
+            _genericAttributeService.SaveAttribute(thirdUser, Core.Domain.Customers.NopCustomerDefaults.LastNameAttribute, defaultThirdUserAddress.LastName);
 
             //set customer password
             _customerPasswordRepository.Insert(new CustomerPassword
@@ -4347,8 +4348,8 @@ namespace Nop.Services.Installation
             InsertInstallationData(new CustomerCustomerRoleMapping { CustomerId = fourthUser.Id, CustomerRoleId = crRegistered.Id });
 
             //set default customer name
-            _genericAttributeService.SaveAttribute(fourthUser, NopCustomerDefaults.FirstNameAttribute, defaultFourthUserAddress.FirstName);
-            _genericAttributeService.SaveAttribute(fourthUser, NopCustomerDefaults.LastNameAttribute, defaultFourthUserAddress.LastName);
+            _genericAttributeService.SaveAttribute(fourthUser, Core.Domain.Customers.NopCustomerDefaults.FirstNameAttribute, defaultFourthUserAddress.FirstName);
+            _genericAttributeService.SaveAttribute(fourthUser, Core.Domain.Customers.NopCustomerDefaults.LastNameAttribute, defaultFourthUserAddress.LastName);
 
             //set customer password
             _customerPasswordRepository.Insert(new CustomerPassword
@@ -4399,9 +4400,9 @@ namespace Nop.Services.Installation
             InsertInstallationData(new CustomerCustomerRoleMapping { CustomerId = fifthUser.Id, CustomerRoleId = crRegistered.Id });
 
             //set default customer name
-            _genericAttributeService.SaveAttribute(fifthUser, NopCustomerDefaults.FirstNameAttribute,
+            _genericAttributeService.SaveAttribute(fifthUser, Core.Domain.Customers.NopCustomerDefaults.FirstNameAttribute,
                 defaultFifthUserAddress.FirstName);
-            _genericAttributeService.SaveAttribute(fifthUser, NopCustomerDefaults.LastNameAttribute,
+            _genericAttributeService.SaveAttribute(fifthUser, Core.Domain.Customers.NopCustomerDefaults.LastNameAttribute,
                 defaultFifthUserAddress.LastName);
 
             //set customer password
@@ -4453,8 +4454,8 @@ namespace Nop.Services.Installation
             InsertInstallationData(new CustomerCustomerRoleMapping { CustomerId = sixthUser.Id, CustomerRoleId = crRegistered.Id });
 
             //set default customer name
-            _genericAttributeService.SaveAttribute(sixthUser, NopCustomerDefaults.FirstNameAttribute, defaultSixthUserAddress.FirstName);
-            _genericAttributeService.SaveAttribute(sixthUser, NopCustomerDefaults.LastNameAttribute, defaultSixthUserAddress.LastName);
+            _genericAttributeService.SaveAttribute(sixthUser, Core.Domain.Customers.NopCustomerDefaults.FirstNameAttribute, defaultSixthUserAddress.FirstName);
+            _genericAttributeService.SaveAttribute(sixthUser, Core.Domain.Customers.NopCustomerDefaults.LastNameAttribute, defaultSixthUserAddress.LastName);
 
             //set customer password
             _customerPasswordRepository.Insert(new CustomerPassword
@@ -4474,35 +4475,35 @@ namespace Nop.Services.Installation
                 Name = "Administrators",
                 Active = true,
                 IsSystemRole = true,
-                SystemName = NopCustomerDefaults.AdministratorsRoleName
+                SystemName = Core.Domain.Customers.NopCustomerDefaults.AdministratorsRoleName
             };
             var crForumModerators = new CustomerRole
             {
                 Name = "Forum Moderators",
                 Active = true,
                 IsSystemRole = true,
-                SystemName = NopCustomerDefaults.ForumModeratorsRoleName
+                SystemName = Core.Domain.Customers.NopCustomerDefaults.ForumModeratorsRoleName
             };
             var crRegistered = new CustomerRole
             {
                 Name = "Registered",
                 Active = true,
                 IsSystemRole = true,
-                SystemName = NopCustomerDefaults.RegisteredRoleName
+                SystemName = Core.Domain.Customers.NopCustomerDefaults.RegisteredRoleName
             };
             var crGuests = new CustomerRole
             {
                 Name = "Guests",
                 Active = true,
                 IsSystemRole = true,
-                SystemName = NopCustomerDefaults.GuestsRoleName
+                SystemName = Core.Domain.Customers.NopCustomerDefaults.GuestsRoleName
             };
             var crVendors = new CustomerRole
             {
                 Name = "Vendors",
                 Active = true,
                 IsSystemRole = true,
-                SystemName = NopCustomerDefaults.VendorsRoleName
+                SystemName = Core.Domain.Customers.NopCustomerDefaults.VendorsRoleName
             };
             var customerRoles = new List<CustomerRole>
             {
@@ -4565,8 +4566,8 @@ namespace Nop.Services.Installation
                 new CustomerCustomerRoleMapping { CustomerId = adminUser.Id, CustomerRoleId = crRegistered.Id });
 
             //set default customer name
-            _genericAttributeService.SaveAttribute(adminUser, NopCustomerDefaults.FirstNameAttribute, "John");
-            _genericAttributeService.SaveAttribute(adminUser, NopCustomerDefaults.LastNameAttribute, "Smith");
+            _genericAttributeService.SaveAttribute(adminUser, Core.Domain.Customers.NopCustomerDefaults.FirstNameAttribute, "John");
+            _genericAttributeService.SaveAttribute(adminUser, Core.Domain.Customers.NopCustomerDefaults.LastNameAttribute, "Smith");
 
             //set hashed admin password
             var customerRegistrationService = EngineContext.Current.Resolve<ICustomerRegistrationService>();
@@ -4581,7 +4582,7 @@ namespace Nop.Services.Installation
                 AdminComment = "Built-in system guest record used for requests from search engines.",
                 Active = true,
                 IsSystemAccount = true,
-                SystemName = NopCustomerDefaults.SearchEngineCustomerName,
+                SystemName = Core.Domain.Customers.NopCustomerDefaults.SearchEngineCustomerName,
                 CreatedOnUtc = DateTime.UtcNow,
                 LastActivityDateUtc = DateTime.UtcNow,
                 RegisteredInStoreId = storeId
@@ -4599,7 +4600,7 @@ namespace Nop.Services.Installation
                 AdminComment = "Built-in system record used for background tasks.",
                 Active = true,
                 IsSystemAccount = true,
-                SystemName = NopCustomerDefaults.BackgroundTaskCustomerName,
+                SystemName = Core.Domain.Customers.NopCustomerDefaults.BackgroundTaskCustomerName,
                 CreatedOnUtc = DateTime.UtcNow,
                 LastActivityDateUtc = DateTime.UtcNow,
                 RegisteredInStoreId = storeId
@@ -6821,6 +6822,12 @@ namespace Nop.Services.Installation
                 CompareProductsCookieExpires = 24 *10,
                 RecentlyViewedProductsCookieExpires = 24 *10,
                 CustomerCookieExpires = 24 * 365
+            });
+
+            settingService.SaveSetting(new CachingSettings
+            {
+                ShortTermCacheTime = 10,
+                DefaultCacheTime = 60,
             });
         }
 

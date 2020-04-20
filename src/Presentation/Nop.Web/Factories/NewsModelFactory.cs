@@ -27,6 +27,7 @@ namespace Nop.Web.Factories
 
         private readonly CaptchaSettings _captchaSettings;
         private readonly CustomerSettings _customerSettings;
+        private readonly ICacheKeyService _cacheKeyService;
         private readonly ICustomerService _customerService;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly IGenericAttributeService _genericAttributeService;
@@ -45,6 +46,7 @@ namespace Nop.Web.Factories
 
         public NewsModelFactory(CaptchaSettings captchaSettings,
             CustomerSettings customerSettings,
+            ICacheKeyService cacheKeyService,
             ICustomerService customerService,
             IDateTimeHelper dateTimeHelper,
             IGenericAttributeService genericAttributeService,
@@ -59,6 +61,7 @@ namespace Nop.Web.Factories
         {
             _captchaSettings = captchaSettings;
             _customerSettings = customerSettings;
+            _cacheKeyService = cacheKeyService;
             _customerService = customerService;
             _dateTimeHelper = dateTimeHelper;
             _genericAttributeService = genericAttributeService;
@@ -164,7 +167,7 @@ namespace Nop.Web.Factories
         /// <returns>Home page news items model</returns>
         public virtual HomepageNewsItemsModel PrepareHomepageNewsItemsModel()
         {
-            var cacheKey = NopModelCacheDefaults.HomepageNewsModelKey.FillCacheKey(_workContext.WorkingLanguage, _storeContext.CurrentStore);
+            var cacheKey = _cacheKeyService.PrepareKeyForDefaultCache(NopModelCacheDefaults.HomepageNewsModelKey, _workContext.WorkingLanguage, _storeContext.CurrentStore);
             var cachedModel = _cacheManager.Get(cacheKey, () =>
             {
                 var newsItems = _newsService.GetAllNews(_workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id, 0, _newsSettings.MainPageNewsCount);

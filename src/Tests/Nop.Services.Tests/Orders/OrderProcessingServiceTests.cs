@@ -4,6 +4,7 @@ using FluentAssertions;
 using System.Linq;
 using Moq;
 using Nop.Core;
+using Nop.Core.Caching;
 using Nop.Data;
 using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Common;
@@ -160,7 +161,7 @@ namespace Nop.Services.Tests.Orders
             _currencySettings = new CurrencySettings();
 
             //price calculation service
-            _priceCalcService = new PriceCalculationService(_catalogSettings, _currencySettings, _categoryService.Object,
+            _priceCalcService = new PriceCalculationService(_catalogSettings, _currencySettings, new FakeCacheKeyService(), _categoryService.Object,
                 _currencyService.Object, _customerService.Object, _discountService.Object, _manufacturerService.Object, _productAttributeParser.Object,
                 _productService.Object, cacheManager, _storeContext.Object, _workContext);
 
@@ -187,6 +188,7 @@ namespace Nop.Services.Tests.Orders
             var shippingMethodCountryMappingRepository = new Mock<IRepository<ShippingMethodCountryMapping>>();
 
             _shippingService = new ShippingService(_addressService.Object,
+                new FakeCacheKeyService(), 
                 _checkoutAttributeParser.Object,
                 _countryService.Object,
                 _customerService.Object,
@@ -245,7 +247,7 @@ namespace Nop.Services.Tests.Orders
             _recurringPaymentHistoryRepository.Setup(r => r.Insert(It.IsAny<RecurringPaymentHistory>())).Callback((RecurringPaymentHistory rph) => recurringPaymentHistory.Add(rph));
             _recurringPaymentHistoryRepository.Setup(r => r.Table).Returns(recurringPaymentHistory.AsQueryable());
 
-            _orderService = new OrderService(_eventPublisher.Object, null, null, null, null, null, null, null, null, _recurringPaymentRepository.Object, _recurringPaymentHistoryRepository.Object, _shipmentService.Object);
+            _orderService = new OrderService(new CachingSettings(), _eventPublisher.Object, null, null, null, null, null, null, null, null, _recurringPaymentRepository.Object, _recurringPaymentHistoryRepository.Object, _shipmentService.Object);
             
 
             _orderTotalCalcService = new OrderTotalCalculationService(_catalogSettings,

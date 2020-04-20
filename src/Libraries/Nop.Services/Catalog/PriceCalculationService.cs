@@ -23,6 +23,7 @@ namespace Nop.Services.Catalog
 
         private readonly CatalogSettings _catalogSettings;
         private readonly CurrencySettings _currencySettings;
+        private readonly ICacheKeyService _cacheKeyService;
         private readonly ICategoryService _categoryService;
         private readonly ICurrencyService _currencyService;
         private readonly ICustomerService _customerService;
@@ -40,6 +41,7 @@ namespace Nop.Services.Catalog
 
         public PriceCalculationService(CatalogSettings catalogSettings,
             CurrencySettings currencySettings,
+            ICacheKeyService cacheKeyService,
             ICategoryService categoryService,
             ICurrencyService currencyService,
             ICustomerService customerService,
@@ -53,6 +55,7 @@ namespace Nop.Services.Catalog
         {
             _catalogSettings = catalogSettings;
             _currencySettings = currencySettings;
+            _cacheKeyService = cacheKeyService;
             _categoryService = categoryService;
             _currencyService = currencyService;
             _customerService = customerService;
@@ -349,7 +352,7 @@ namespace Nop.Services.Catalog
             if (product == null)
                 throw new ArgumentNullException(nameof(product));
 
-            var cacheKey = NopCatalogDefaults.ProductPriceCacheKey.FillCacheKey(
+            var cacheKey = _cacheKeyService.PrepareKeyForDefaultCache(NopCatalogDefaults.ProductPriceCacheKey, 
                 product,
                 overriddenProductPrice,
                 additionalCharge,
@@ -358,7 +361,7 @@ namespace Nop.Services.Catalog
                 _customerService.GetCustomerRoleIds(customer),
                 _storeContext.CurrentStore);
 
-            var cacheTime = _catalogSettings.CacheProductPrices ? NopCachingDefaults.CacheTime : 0;
+            var cacheTime = _catalogSettings.CacheProductPrices ? cacheKey.CacheTime : 0;
             //we do not cache price for rental products
             //otherwise, it can cause memory leaks (to store all possible date period combinations)
             if (product.IsRental)

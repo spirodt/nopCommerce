@@ -18,6 +18,7 @@ using Nop.Data;
 using Nop.Services.Catalog;
 using Nop.Services.Customers;
 using Nop.Services.Discounts;
+using Nop.Services.Tests.FakeServices;
 using Nop.Tests;
 using NUnit.Framework;
 
@@ -76,9 +77,9 @@ namespace Nop.Services.Tests.Catalog
                 .Callback(
                     (CustomerCustomerRoleMapping ccrm) => { customerCustomerRoleMapping.Add(ccrm); });
 
-            _customerService = new CustomerService(null, new TestCacheManager(),  null, null, null, null,
+            _customerService = new CustomerService(new CachingSettings(), null, new FakeCacheKeyService(),  null, null, null, null,
                 null, _customerCustomerRoleMappingRepository.Object, null, _customerRoleRepository.Object, null, null,
-                null, _storeContext.Object, null);
+                new TestCacheManager(), _storeContext.Object, null);
 
             _manufacturerService = new Mock<IManufacturerService>();
 
@@ -97,7 +98,7 @@ namespace Nop.Services.Tests.Catalog
 
             var shipmentRepository = new Mock<IRepository<Shipment>>();
 
-            _productService = new ProductService(new CatalogSettings(), new CommonSettings(), null, _customerService,
+            _productService = new ProductService(new CatalogSettings(), new CommonSettings(), null, new FakeCacheKeyService(),  _customerService,
                 null, null, null, null, null, null, null, null, null, _discountProductMappingRepository.Object,
                 _productRepository.Object, null, null, null, null, null, null, null, null, shipmentRepository.Object,
                 null, null, _tierPriceRepository.Object, null,
@@ -125,7 +126,8 @@ namespace Nop.Services.Tests.Catalog
                 }.AsQueryable());
 
             _priceCalcService = new PriceCalculationService(_catalogSettings,
-                new CurrencySettings { PrimaryStoreCurrencyId = 1 }, _categoryService.Object,
+                new CurrencySettings { PrimaryStoreCurrencyId = 1 },
+                new FakeCacheKeyService(), _categoryService.Object,
                 _serviceProvider.CurrencyService.Object, _customerService, _discountService,
                 _manufacturerService.Object, _productAttributeParser.Object,
                 _productService, _cacheManager, _storeContext.Object, _workContext.Object);

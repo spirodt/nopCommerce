@@ -18,6 +18,7 @@ namespace Nop.Web.Components
     {
         private readonly CatalogSettings _catalogSettings;
         private readonly IAclService _aclService;
+        private readonly ICacheKeyService _cacheKeyService;
         private readonly IOrderReportService _orderReportService;
         private readonly IProductModelFactory _productModelFactory;
         private readonly IProductService _productService;
@@ -27,6 +28,7 @@ namespace Nop.Web.Components
 
         public HomepageBestSellersViewComponent(CatalogSettings catalogSettings,
             IAclService aclService,
+            ICacheKeyService cacheKeyService,
             IOrderReportService orderReportService,
             IProductModelFactory productModelFactory,
             IProductService productService,
@@ -36,6 +38,7 @@ namespace Nop.Web.Components
         {
             _catalogSettings = catalogSettings;
             _aclService = aclService;
+            _cacheKeyService = cacheKeyService;
             _orderReportService = orderReportService;
             _productModelFactory = productModelFactory;
             _productService = productService;
@@ -50,7 +53,7 @@ namespace Nop.Web.Components
                 return Content("");
 
             //load and cache report
-            var report = _cacheManager.Get(NopModelCacheDefaults.HomepageBestsellersIdsKey.FillCacheKey(_storeContext.CurrentStore),
+            var report = _cacheManager.Get(_cacheKeyService.PrepareKeyForDefaultCache(NopModelCacheDefaults.HomepageBestsellersIdsKey, _storeContext.CurrentStore),
                 () => _orderReportService.BestSellersReport(
                         storeId: _storeContext.CurrentStore.Id,
                         pageSize: _catalogSettings.NumberOfBestsellersOnHomepage)

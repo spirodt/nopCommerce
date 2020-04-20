@@ -20,6 +20,7 @@ namespace Nop.Services.Localization
     {
         #region Fields
 
+        private readonly ICacheKeyService _cacheKeyService;
         private readonly IEventPublisher _eventPublisher;
         private readonly IRepository<Language> _languageRepository;
         private readonly ISettingService _settingService;
@@ -31,13 +32,15 @@ namespace Nop.Services.Localization
 
         #region Ctor
 
-        public LanguageService(IEventPublisher eventPublisher,
+        public LanguageService(ICacheKeyService cacheKeyService,
+            IEventPublisher eventPublisher,
             IRepository<Language> languageRepository,
             ISettingService settingService,
             IStaticCacheManager cacheManager,
             IStoreMappingService storeMappingService,
             LocalizationSettings localizationSettings)
         {
+            _cacheKeyService = cacheKeyService;
             _eventPublisher = eventPublisher;
             _languageRepository = languageRepository;
             _settingService = settingService;
@@ -92,7 +95,7 @@ namespace Nop.Services.Localization
             query = query.OrderBy(l => l.DisplayOrder).ThenBy(l => l.Id);
 
             //cacheable copy
-            var key = NopLocalizationDefaults.LanguagesAllCacheKey.FillCacheKey(storeId, showHidden);
+            var key = _cacheKeyService.PrepareKeyForDefaultCache(NopLocalizationDefaults.LanguagesAllCacheKey, storeId, showHidden);
             
             var languages = _cacheManager.Get(key, () =>
             {

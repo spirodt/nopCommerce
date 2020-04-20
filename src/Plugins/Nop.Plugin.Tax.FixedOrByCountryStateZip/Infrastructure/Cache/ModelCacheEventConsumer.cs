@@ -41,13 +41,16 @@ namespace Nop.Plugin.Tax.FixedOrByCountryStateZip.Infrastructure.Cache
 
         #region Ctor
 
-        public ModelCacheEventConsumer(ICountryStateZipService taxRateService,
+        public ModelCacheEventConsumer(CachingSettings cachingSettings,
+            ICountryStateZipService taxRateService,
             ISettingService settingService,
             IStaticCacheManager cacheManager)
         {
             _taxRateService = taxRateService;
             _settingService = settingService;
             _cacheManager = cacheManager;
+
+            TAXRATE_ALL_KEY.CacheTime = cachingSettings.ShortTermCacheTime;
         }
 
         #endregion

@@ -45,6 +45,7 @@ namespace Nop.Web.Controllers
 
         private readonly CaptchaSettings _captchaSettings;
         private readonly CustomerSettings _customerSettings;
+        private readonly ICacheKeyService _cacheKeyService;
         private readonly ICheckoutAttributeParser _checkoutAttributeParser;
         private readonly ICheckoutAttributeService _checkoutAttributeService;
         private readonly ICurrencyService _currencyService;
@@ -82,6 +83,7 @@ namespace Nop.Web.Controllers
 
         public ShoppingCartController(CaptchaSettings captchaSettings,
             CustomerSettings customerSettings,
+            ICacheKeyService cacheKeyService,
             ICheckoutAttributeParser checkoutAttributeParser,
             ICheckoutAttributeService checkoutAttributeService,
             ICurrencyService currencyService,
@@ -115,6 +117,7 @@ namespace Nop.Web.Controllers
         {
             _captchaSettings = captchaSettings;
             _customerSettings = customerSettings;
+            _cacheKeyService = cacheKeyService;
             _checkoutAttributeParser = checkoutAttributeParser;
             _checkoutAttributeService = checkoutAttributeService;
             _currencyService = currencyService;
@@ -274,7 +277,7 @@ namespace Nop.Web.Controllers
             }
 
             //save checkout attributes
-            _genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, NopCustomerDefaults.CheckoutAttributes, attributesXml, _storeContext.CurrentStore.Id);
+            _genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, Core.Domain.Customers.NopCustomerDefaults.CheckoutAttributes, attributesXml, _storeContext.CurrentStore.Id);
         }
 
         protected virtual void SaveItem(ShoppingCartItem updatecartitem, List<string> addToCartWarnings, Product product,
@@ -420,7 +423,7 @@ namespace Nop.Web.Controllers
             {
                 //performance optimization. try cache first
                 var shippingOptions = _genericAttributeService.GetAttribute<List<ShippingOption>>(_workContext.CurrentCustomer,
-                    NopCustomerDefaults.OfferedShippingOptionsAttribute, _storeContext.CurrentStore.Id);
+                    Core.Domain.Customers.NopCustomerDefaults.OfferedShippingOptionsAttribute, _storeContext.CurrentStore.Id);
                 if (shippingOptions?.Any() == true)
                     selectedShippingOption = shippingOptions.FirstOrDefault(so => so.Name == name);
                 else
@@ -456,7 +459,7 @@ namespace Nop.Web.Controllers
             }
 
             _genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
-                NopCustomerDefaults.SelectedShippingOptionAttribute, selectedShippingOption, _storeContext.CurrentStore.Id);
+                Core.Domain.Customers.NopCustomerDefaults.SelectedShippingOptionAttribute, selectedShippingOption, _storeContext.CurrentStore.Id);
 
             var shoppingCartModel = new ShoppingCartModel();
             shoppingCartModel = _shoppingCartModelFactory.PrepareShoppingCartModel(shoppingCartModel, cart);
@@ -859,7 +862,7 @@ namespace Nop.Web.Controllers
 
                 if (pictureId > 0)
                 {
-                    var productAttributePictureCacheKey = NopModelCacheDefaults.ProductAttributePictureModelKey.FillCacheKey(
+                    var productAttributePictureCacheKey = _cacheKeyService.PrepareKeyForDefaultCache(NopModelCacheDefaults.ProductAttributePictureModelKey, 
                         pictureId, _webHelper.IsCurrentConnectionSecured(), _storeContext.CurrentStore);
                     var pictureModel = _cacheManager.Get(productAttributePictureCacheKey, () =>
                     {
@@ -910,7 +913,7 @@ namespace Nop.Web.Controllers
             //save selected attributes
             ParseAndSaveCheckoutAttributes(cart, form);
             var attributeXml = _genericAttributeService.GetAttribute<string>(_workContext.CurrentCustomer,
-                NopCustomerDefaults.CheckoutAttributes, _storeContext.CurrentStore.Id);
+                Core.Domain.Customers.NopCustomerDefaults.CheckoutAttributes, _storeContext.CurrentStore.Id);
 
             //conditions
             var enabledAttributeIds = new List<int>();
@@ -1190,7 +1193,7 @@ namespace Nop.Web.Controllers
         [FormValueRequired("continueshopping")]
         public virtual IActionResult ContinueShopping()
         {
-            var returnUrl = _genericAttributeService.GetAttribute<string>(_workContext.CurrentCustomer, NopCustomerDefaults.LastContinueShoppingPageAttribute, _storeContext.CurrentStore.Id);
+            var returnUrl = _genericAttributeService.GetAttribute<string>(_workContext.CurrentCustomer, Core.Domain.Customers.NopCustomerDefaults.LastContinueShoppingPageAttribute, _storeContext.CurrentStore.Id);
 
             if (!string.IsNullOrEmpty(returnUrl))
                 return Redirect(returnUrl);
@@ -1209,7 +1212,7 @@ namespace Nop.Web.Controllers
 
             //validate attributes
             var checkoutAttributes = _genericAttributeService.GetAttribute<string>(_workContext.CurrentCustomer,
-                NopCustomerDefaults.CheckoutAttributes, _storeContext.CurrentStore.Id);
+                Core.Domain.Customers.NopCustomerDefaults.CheckoutAttributes, _storeContext.CurrentStore.Id);
             var checkoutAttributeWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributes, true);
             if (checkoutAttributeWarnings.Any())
             {
@@ -1383,7 +1386,7 @@ namespace Nop.Web.Controllers
                     Rate = m.Rate
                 }).ToList();
                 _genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
-                    NopCustomerDefaults.OfferedShippingOptionsAttribute, options, _storeContext.CurrentStore.Id);
+                    Core.Domain.Customers.NopCustomerDefaults.OfferedShippingOptionsAttribute, options, _storeContext.CurrentStore.Id);
             }
 
             return Json(result);

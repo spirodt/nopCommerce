@@ -376,11 +376,12 @@ namespace Nop.Web.Models.Catalog
             /// <param name="cacheManager">Cache manager</param>
             public virtual void PrepareSpecsFilters(IList<int> alreadyFilteredSpecOptionIds,
                 int[] filterableSpecificationAttributeOptionIds,
+                ICacheKeyService cacheKeyService,
                 ISpecificationAttributeService specificationAttributeService, ILocalizationService localizationService,
                 IWebHelper webHelper, IWorkContext workContext, IStaticCacheManager cacheManager)
             {
                 Enabled = false;
-                var cacheKey = NopModelCacheDefaults.SpecsFilterModelKey.FillCacheKey(filterableSpecificationAttributeOptionIds, workContext.WorkingLanguage);
+                var cacheKey = cacheKeyService.PrepareKeyForDefaultCache(NopModelCacheDefaults.SpecsFilterModelKey, filterableSpecificationAttributeOptionIds, workContext.WorkingLanguage);
 
                 var allOptions = specificationAttributeService.GetSpecificationAttributeOptionsByIds(filterableSpecificationAttributeOptionIds);
                 var allFilters = cacheManager.Get(cacheKey, () => allOptions.Select(sao =>

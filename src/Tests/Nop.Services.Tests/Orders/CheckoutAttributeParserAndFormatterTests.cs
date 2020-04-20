@@ -16,6 +16,7 @@ using Nop.Services.Media;
 using Nop.Services.Orders;
 using Nop.Services.Stores;
 using Nop.Services.Tax;
+using Nop.Services.Tests.FakeServices;
 using Nop.Tests;
 using NUnit.Framework;
 
@@ -132,7 +133,7 @@ namespace Nop.Services.Tests.Orders
             _eventPublisher = new Mock<IEventPublisher>();
             _eventPublisher.Setup(x => x.Publish(It.IsAny<object>()));
 
-            _checkoutAttributeService = new CheckoutAttributeService(cacheManager, _eventPublisher.Object,
+            _checkoutAttributeService = new CheckoutAttributeService(new FakeCacheKeyService(), cacheManager, _eventPublisher.Object,
                 _checkoutAttributeRepo.Object, _checkoutAttributeValueRepo.Object, _storeMappingService.Object);
 
             _checkoutAttributeParser = new CheckoutAttributeParser(_checkoutAttributeService);

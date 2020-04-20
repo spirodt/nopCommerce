@@ -15,6 +15,7 @@ using Nop.Core.Domain.Tax;
 using Nop.Core.Domain.Vendors;
 using Nop.Core.Http.Extensions;
 using Nop.Plugin.Tax.Avalara.Domain;
+using Nop.Services.Caching;
 using Nop.Services.Catalog;
 using Nop.Services.Common;
 using Nop.Services.Customers;
@@ -74,6 +75,7 @@ namespace Nop.Plugin.Tax.Avalara.Factories
             CustomerSettings customerSettings,
             IAddressService addressService,
             IAddressModelFactory addressModelFactory,
+            ICacheKeyService cacheKeyService,
             ICheckoutAttributeFormatter checkoutAttributeFormatter,
             ICheckoutAttributeParser checkoutAttributeParser,
             ICheckoutAttributeService checkoutAttributeService,
@@ -120,6 +122,7 @@ namespace Nop.Plugin.Tax.Avalara.Factories
                 commonSettings,
                 customerSettings,
                 addressModelFactory,
+                cacheKeyService,
                 checkoutAttributeFormatter,
                 checkoutAttributeParser,
                 checkoutAttributeService,

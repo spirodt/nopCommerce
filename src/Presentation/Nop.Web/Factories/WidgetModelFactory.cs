@@ -18,6 +18,7 @@ namespace Nop.Web.Factories
     {
         #region Fields
 
+        private readonly ICacheKeyService _cacheKeyService;
         private readonly IStaticCacheManager _cacheManager;
         private readonly IStoreContext _storeContext;
         private readonly IThemeContext _themeContext;
@@ -28,12 +29,14 @@ namespace Nop.Web.Factories
 
         #region Ctor
 
-        public WidgetModelFactory(IStaticCacheManager cacheManager,
+        public WidgetModelFactory(ICacheKeyService cacheKeyService,
+            IStaticCacheManager cacheManager,
             IStoreContext storeContext,
             IThemeContext themeContext,
             IWidgetPluginManager widgetPluginManager,
             IWorkContext workContext)
         {
+            _cacheKeyService = cacheKeyService;
             _cacheManager = cacheManager;
             _storeContext = storeContext;
             _themeContext = themeContext;
@@ -53,7 +56,7 @@ namespace Nop.Web.Factories
         /// <returns>List of the render widget models</returns>
         public virtual List<RenderWidgetModel> PrepareRenderWidgetModel(string widgetZone, object additionalData = null)
         {
-            var cacheKey = NopModelCacheDefaults.WidgetModelKey.FillCacheKey(
+            var cacheKey = _cacheKeyService.PrepareKeyForDefaultCache(NopModelCacheDefaults.WidgetModelKey, 
                 _workContext.CurrentCustomer, _storeContext.CurrentStore, widgetZone, _themeContext.WorkingThemeName);
 
             var cachedModels = _cacheManager.Get(cacheKey, () =>

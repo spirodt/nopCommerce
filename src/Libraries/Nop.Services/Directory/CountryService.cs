@@ -23,6 +23,7 @@ namespace Nop.Services.Directory
         #region Fields
 
         private readonly CatalogSettings _catalogSettings;
+        private readonly ICacheKeyService _cacheKeyService;
         private readonly IStaticCacheManager _cacheManager;
         private readonly IEventPublisher _eventPublisher;
         private readonly ILocalizationService _localizationService;
@@ -35,6 +36,7 @@ namespace Nop.Services.Directory
         #region Ctor
 
         public CountryService(CatalogSettings catalogSettings,
+            ICacheKeyService cacheKeyService,
             IStaticCacheManager cacheManager,
             IEventPublisher eventPublisher,
             ILocalizationService localizationService,
@@ -43,6 +45,7 @@ namespace Nop.Services.Directory
             IStoreContext storeContext)
         {
             _catalogSettings = catalogSettings;
+            _cacheKeyService = cacheKeyService;
             _cacheManager = cacheManager;
             _eventPublisher = eventPublisher;
             _localizationService = localizationService;
@@ -78,7 +81,8 @@ namespace Nop.Services.Directory
         /// <returns>Countries</returns>
         public virtual IList<Country> GetAllCountries(int languageId = 0, bool showHidden = false)
         {
-            var key = NopDirectoryDefaults.CountriesAllCacheKey.FillCacheKey(languageId, showHidden);
+            var key = _cacheKeyService.PrepareKeyForDefaultCache(NopDirectoryDefaults.CountriesAllCacheKey, languageId, showHidden);
+
             return _cacheManager.Get(key, () =>
             {
                 var query = _countryRepository.Table;
@@ -196,7 +200,7 @@ namespace Nop.Services.Directory
             if (string.IsNullOrEmpty(twoLetterIsoCode))
                 return null;
 
-            var key = NopDirectoryDefaults.CountriesByTwoLetterCodeCacheKey.FillCacheKey(twoLetterIsoCode);
+            var key = _cacheKeyService.PrepareKeyForDefaultCache(NopDirectoryDefaults.CountriesByTwoLetterCodeCacheKey, twoLetterIsoCode);
 
             var query = from c in _countryRepository.Table
                 where c.TwoLetterIsoCode == twoLetterIsoCode
@@ -215,7 +219,7 @@ namespace Nop.Services.Directory
             if (string.IsNullOrEmpty(threeLetterIsoCode))
                 return null;
 
-            var key = NopDirectoryDefaults.CountriesByThreeLetterCodeCacheKey.FillCacheKey(threeLetterIsoCode);
+            var key = _cacheKeyService.PrepareKeyForDefaultCache(NopDirectoryDefaults.CountriesByThreeLetterCodeCacheKey, threeLetterIsoCode);
 
             var query = from c in _countryRepository.Table
                 where c.ThreeLetterIsoCode == threeLetterIsoCode

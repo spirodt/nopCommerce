@@ -22,6 +22,7 @@ namespace Nop.Services.Messages
         #region Fields
 
         private readonly CatalogSettings _catalogSettings;
+        private readonly ICacheKeyService _cacheKeyService;
         private readonly IStaticCacheManager _cacheManager;
         private readonly IEventPublisher _eventPublisher;
         private readonly ILanguageService _languageService;
@@ -36,6 +37,7 @@ namespace Nop.Services.Messages
         #region Ctor
 
         public MessageTemplateService(CatalogSettings catalogSettings,
+            ICacheKeyService cacheKeyService,
             IStaticCacheManager cacheManager,
             IEventPublisher eventPublisher,
             ILanguageService languageService,
@@ -46,6 +48,7 @@ namespace Nop.Services.Messages
             IStoreMappingService storeMappingService)
         {
             _catalogSettings = catalogSettings;
+            _cacheKeyService = cacheKeyService;
             _cacheManager = cacheManager;
             _eventPublisher = eventPublisher;
             _languageService = languageService;
@@ -129,7 +132,8 @@ namespace Nop.Services.Messages
             if (string.IsNullOrWhiteSpace(messageTemplateName))
                 throw new ArgumentException(nameof(messageTemplateName));
 
-            var key = NopMessageDefaults.MessageTemplatesByNameCacheKey.FillCacheKey(messageTemplateName, storeId);
+            var key = _cacheKeyService.PrepareKeyForDefaultCache(NopMessageDefaults.MessageTemplatesByNameCacheKey, messageTemplateName, storeId);
+
             return _cacheManager.Get(key, () =>
             {
                 //get message templates with the passed name
@@ -152,7 +156,7 @@ namespace Nop.Services.Messages
         /// <returns>Message template list</returns>
         public virtual IList<MessageTemplate> GetAllMessageTemplates(int storeId)
         {
-            var key = NopMessageDefaults.MessageTemplatesAllCacheKey.FillCacheKey(storeId);
+            var key = _cacheKeyService.PrepareKeyForDefaultCache(NopMessageDefaults.MessageTemplatesAllCacheKey, storeId);
 
             var query = _messageTemplateRepository.Table;
             query = query.OrderBy(t => t.Name);
